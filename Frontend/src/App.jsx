@@ -1,4 +1,4 @@
-import React from "react"; // Removed useEffect since it's not needed in App
+import React, { Children, useEffect } from "react"; // Removed useEffect since it's not needed in App
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Landingpage from "../components/Landingpage";
 import Navbar from "../components/Navbar";
@@ -9,48 +9,55 @@ import AgentLogin from "../components/Login";
 import AgentSignup from "../components/Signup";
 import Homebutton from "../components/Home";
 import Chat from "../components/ChatAi";
+import ChatContainer from "../components/Chatai/ChatContainer";
+import { useAuthStore } from "./store/AuthStore";
 
-// Protected Route Component to check if user is authenticated
-const ProtectedRoute = ({ children }) => {
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token'); // Check if token exists
-
-  if (!token) {
-    return <Navigate to="/login" replace />; // Redirect to login if no token
-  }
-
-  return children; // Render children if authenticated
-};
-
-// Public Route Component to redirect authenticated users away from login/signup
-const PublicRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
-
-  if (token) {
-    return <Navigate to="/chat" replace />; // Redirect to chat if authenticated
+const RedirectAuthenticatedUser = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+  if (isAuthenticated) {
+    return <Navigate to="/chat" replace />;
   }
 
   return children;
 };
 
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isCheckingAuth } = useAuthStore();
+
+  if (isCheckingAuth) return <div>Loading</div>; // Show a loading state
+  if (!isAuthenticated) return <Navigate to="/home" replace />; // Redirect to login if not authenticated
+
+  return children;
+};
+
+
 const App = () => {
+  const {checkAuth} = useAuthStore();
+
+useEffect(()=>{
+  checkAuth();
+},[])
   return (
+    <>
+  
     <Router>
       <div className="flex flex-col min-h-screen">
         {/* Main content */}
         <main className="flex-grow">
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<Homebutton />} />
-            <Route path="/home" element={<Homebutton />} />
+            <Route path="/" element={<RedirectAuthenticatedUser><Homebutton /></RedirectAuthenticatedUser>} />
+            <Route path="/home" element={<RedirectAuthenticatedUser><Homebutton /></RedirectAuthenticatedUser>} />
             <Route
               path="/login"
-              element={<AgentLogin/>}
+              element={
+              <RedirectAuthenticatedUser><AgentLogin/></RedirectAuthenticatedUser>}
             />
             <Route
               path="/signup"
               element={
-                  <AgentSignup />
+                <RedirectAuthenticatedUser><AgentSignup /></RedirectAuthenticatedUser>
+               
               }
             />
 
@@ -58,20 +65,22 @@ const App = () => {
             <Route
               path="/chat"
               element={
-                  <Chat />
+                <ProtectedRoute><ChatContainer /></ProtectedRoute>
+                  
               }
             />
             <Route
               path="/dashboard"
               element={
-                  <Chat /> 
+                <ProtectedRoute> <ChatContainer /> </ProtectedRoute>
+                 
               }
             />
 
             {/* Other Routes */}
-            <Route path="/content" element={<ContentSections />} />
-            <Route path="/security" element={<AdvancedAISecurityFeatures />} />
-            <Route path="/footer" element={<Footer />} />
+            <Route path="/content" element={<ProtectedRoute> <ContentSections /></ProtectedRoute>} />
+            <Route path="/security" element={
+              <ProtectedRoute><AdvancedAISecurityFeatures /></ProtectedRoute>} />
 
             {/* Catch-all route for undefined paths */}
             <Route path="*" element={<Navigate to="/" replace />} />
@@ -79,6 +88,7 @@ const App = () => {
         </main>
       </div>
     </Router>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useAuthStore } from '../src/store/AuthStore';
 
-// Lucide Icons
+// Lucide Icons (unchanged)
 const IconComponents = {
   Sun: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -95,6 +96,8 @@ function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const { user } = useAuthStore();
+
   // Auto-resize textarea
   useEffect(() => {
     const textarea = document.getElementById('message-input');
@@ -112,6 +115,11 @@ function Chat() {
       createNewChat();
     }
   }, []);
+
+  // Update user UI when user changes
+  useEffect(() => {
+    // This effect ensures the UI reflects the latest user data
+  }, [user]);
 
   const createNewChat = () => {
     const newChatId = Date.now().toString();
@@ -214,6 +222,13 @@ function Chat() {
 
   const currentChat = chatHistory.find((chat) => chat.id === selectedChatId) || { messages: [] };
   const messages = currentChat.messages;
+
+  // Get user's initials for the profile avatar
+  const getUserInitials = (name) => {
+    if (!name) return 'U'; // Default to 'U' if no name
+    const names = name.split(' ');
+    return names.map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  };
 
   return (
     <div className={`flex h-screen ${darkMode ? 'bg-[#1a1a1a] text-white' : 'bg-white text-gray-900'}`}>
@@ -328,11 +343,11 @@ function Chat() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#ff6200] to-[#ff8c00] flex items-center justify-center text-white font-medium text-lg shadow-md">
-                    JS
+                    {user?.name ? getUserInitials(user.name) : 'U'}
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-medium">John Smith</p>
-                    <p className="text-xs text-[#999999]">Free Plan</p>
+                    <p className="text-sm font-medium">{user?.name || 'Guest User'}</p>
+                    <p className="text-xs text-[#999999]">{user?.plan || 'Free Plan'}</p>
                   </div>
                 </div>
                 <button
@@ -377,7 +392,7 @@ function Chat() {
                 {darkMode ? <IconComponents.Sun className="w-5 h-5 text-[#ff6200]" /> : <IconComponents.Moon className="w-5 h-5" />}
               </button>
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#ff6200] to-[#ff8c00] flex items-center justify-center text-white font-medium text-lg shadow-md">
-                JS
+                {user?.name ? getUserInitials(user.name) : 'U'}
               </div>
             </div>
           )}
@@ -555,7 +570,7 @@ function Chat() {
                           </div>
                           {msg.role === 'user' && (
                             <div className="ml-2 mt-1 h-8 w-8 rounded-full bg-gradient-to-br from-[#ff6200] to-[#ff8c00] flex items-center justify-center text-white font-medium">
-                              JS
+                              {user?.name ? getUserInitials(user.name) : 'U'}
                             </div>
                           )}
                         </div>

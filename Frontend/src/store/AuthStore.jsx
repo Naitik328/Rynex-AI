@@ -63,10 +63,21 @@ export const useAuthStore = create((set) => ({
 	checkAuth: async () => {
 		set({ isCheckingAuth: true, error: null });
 		try {
-			const response = await axios.get(`${API_URL}/check-auth`);
-			set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false });
+			const response = await axios.get(`${API_URL}/check-auth`, { withCredentials: true }); // Ensure cookies are sent
+			console.log("Check Auth Response:", response.data); // Log the response for debugging
+	
+			if (response.data.success) {
+				set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false });
+			} else {
+				set({ isAuthenticated: false, isCheckingAuth: false, error: response.data.message || "Authentication failed" });
+			}
 		} catch (error) {
-			set({ error: null, isCheckingAuth: false, isAuthenticated: false });
+			console.error("Check Auth Error:", error.response?.data || error.message); // Log the error
+			set({ 
+				error: error.response?.data?.message || "Error checking authentication", 
+				isCheckingAuth: false, 
+				isAuthenticated: false 
+			});
 		}
 	},
 	forgotPassword: async (email) => {

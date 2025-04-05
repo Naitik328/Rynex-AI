@@ -13,7 +13,7 @@ const AgentSignup = () => {
     confirmPassword: '',
     agreeToTerms: false
   });
-  const { signUp } = useAuthStore(); // Assuming you have a custom hook for authentication
+  const { signup } = useAuthStore(); // Assuming you have a custom hook for authentication
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -47,9 +47,7 @@ const AgentSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await signUp(formData.email, formData.password, formData.fullName,formData.confirmPassword,formData.agreeToTerms);
-    alert('Account created successfully');
-    navigate('/'); // Redirect to home page after successful signup
+    await signup(formData.email, formData.password, formData.fullName,formData.confirmPassword,formData.agreeToTerms);
     setError('');
     
     // Basic validation
@@ -92,6 +90,10 @@ const AgentSignup = () => {
     return strength;
   };
 
+  const googleLogin=()=>{
+    window.location.href = `${import.meta.env.VITE_URL}/api/auth/google`
+  }
+
   const renderPasswordStrength = () => {
     const strength = getPasswordStrength();
     const strengthText = ['Very Weak', 'Weak', 'Medium', 'Strong', 'Very Strong'];
@@ -102,6 +104,8 @@ const AgentSignup = () => {
       'bg-lime-500',
       'bg-green-500'
     ];
+
+    
     
     return (
       <div className="mt-2">
@@ -268,7 +272,7 @@ const AgentSignup = () => {
           {/* Social Signup Buttons (Placeholder - Add your social login logic here if needed) */}
           <div className="grid grid-cols-3 gap-4">
             {/* Google */}
-            <button type="button" className="flex items-center justify-center p-3 bg-[#333333] border border-orange-900/30 rounded-lg hover:border-orange-500 hover:bg-black transition-colors">
+            <button onClick={googleLogin} type="button" className="flex items-center justify-center p-3 bg-[#333333] border border-orange-900/30 rounded-lg hover:border-orange-500 hover:bg-black transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-400">
                 <path
                   fill="currentColor"

@@ -11,7 +11,7 @@ const AgentLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const {login} = useAuthStore();
+  const { login } = useAuthStore();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -19,9 +19,6 @@ const AgentLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email, password);
-    alert('Login successful');
-    navigate('/');
     setError('');
     setIsLoading(true);
 
@@ -31,7 +28,19 @@ const AgentLogin = () => {
       return;
     }
 
-  
+    try {
+      // Assume login function in useAuthStore handles the API call with credentials
+      await login(email, password);
+    } catch (err) {
+      setError(err.message || 'An error occurred during login');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const googleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_URL}/api/auth/google`;
   };
 
   return (
@@ -67,6 +76,7 @@ const AgentLogin = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -82,11 +92,13 @@ const AgentLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
             <button
               type="button"
               className="absolute inset-y-0 right-0 pr-4 flex items-center text-orange-700 hover:text-orange-500 transition-colors"
               onClick={togglePasswordVisibility}
+              disabled={isLoading}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -100,6 +112,7 @@ const AgentLogin = () => {
                 id="remember-me"
                 className="w-4 h-4 rounded border-orange-900 bg-[#1a1a1a] text-orange-500 focus:ring-orange-500/50"
                 name="remember"
+                disabled={isLoading}
               />
               <label htmlFor="remember-me" className="ml-2 text-orange-200/80 text-sm">
                 Remember me
@@ -108,6 +121,7 @@ const AgentLogin = () => {
             <Link
               to="/forgot-password"
               className="text-orange-400 text-sm font-medium cursor-pointer hover:text-orange-300 transition-colors"
+              aria-disabled={isLoading}
             >
               Forgot password?
             </Link>
@@ -139,10 +153,14 @@ const AgentLogin = () => {
             <div className="flex-grow h-px bg-gradient-to-r from-transparent via-orange-900/30 to-transparent"></div>
           </div>
 
-          {/* Social Login Buttons (Placeholder) */}
+          {/* Social Login Buttons */}
           <div className="grid grid-cols-3 gap-4">
             {/* Google */}
-            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300">
+            <button
+              onClick={googleLogin}
+              className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300"
+              disabled={isLoading}
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-500">
                 <path
                   fill="currentColor"
@@ -152,7 +170,10 @@ const AgentLogin = () => {
             </button>
 
             {/* Apple */}
-            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300">
+            <button
+              className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300"
+              disabled={isLoading}
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-500">
                 <path
                   fill="currentColor"
@@ -162,7 +183,10 @@ const AgentLogin = () => {
             </button>
 
             {/* GitHub */}
-            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300">
+            <button
+              className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300"
+              disabled={isLoading}
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-500">
                 <path
                   fill="currentColor"
@@ -179,6 +203,7 @@ const AgentLogin = () => {
               <Link
                 to="/signup"
                 className="text-orange-500 cursor-pointer font-semibold hover:text-orange-400 transition-colors"
+                aria-disabled={isLoading}
               >
                 Create Account
               </Link>

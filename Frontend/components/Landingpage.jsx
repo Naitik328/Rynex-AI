@@ -137,7 +137,7 @@ function Landingpage() {
                 className="flex flex-wrap justify-center gap-4 md:gap-6 animate-fade-in"
                 style={{ animationDelay: '0.8s' }}
               >
-                <ActionButton primary to="/chat">Start Free Trial</ActionButton> {/* Updated to route to /signup */}
+                <ActionButton primary to="/login">Start Free Trial</ActionButton> {/* Updated to route to /signup */}
                 <ActionButton icon={<PlayIcon />} to="/demo">Watch Demo</ActionButton> {/* Optional: added route for demo */}
               </div>
             </div>

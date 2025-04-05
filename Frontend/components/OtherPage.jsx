@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuthStore } from '../src/store/AuthStore';
 
 // Lucide Icons
 const IconComponents = {
@@ -82,7 +83,7 @@ const IconComponents = {
   ),
 };
 
-function App() {
+function Chat() {
   const [darkMode, setDarkMode] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [leftSidebarVisible, setLeftSidebarVisible] = useState(true);
@@ -95,6 +96,7 @@ function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const {user} = useAuthStore()
   // Auto-resize textarea
   useEffect(() => {
     const textarea = document.getElementById('message-input');
@@ -661,4 +663,4 @@ function App() {
   );
 }
 
-export default App;
+export default Chat;
