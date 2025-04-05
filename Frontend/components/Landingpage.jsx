@@ -107,7 +107,7 @@ function Landingpage() {
 
         <style>{globalStyles}</style>
 
-        <div className="flex items-center justify-center min-h-screen pt-16">
+        <div id="home" className="flex items-center justify-center min-h-screen pt-16"> {/* Added id="home" here */}
           <div className="container px-4 py-12">
             <div className="max-w-4xl mx-auto flex flex-col items-center">
               <div 
@@ -129,7 +129,7 @@ function Landingpage() {
                 className="text-base md:text-lg text-gray-300 max-w-2xl text-center mb-12 animate-fade-in"
                 style={{ animationDelay: '0.6s' }}
               >
-                QuantumX AI is your intelligent agent, automating tasks seamlessly to boost efficiency and productivity in real-time
+                RyneX  is your intelligent agent, automating tasks seamlessly to boost efficiency and productivity in real-time
               </p>
 
               <div 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate for redirection
 
 const AgentSignup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +14,7 @@ const AgentSignup = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Hook for navigation after signup
 
   const togglePasswordVisibility = (field) => {
     if (field === 'password') {
@@ -40,7 +42,7 @@ const AgentSignup = () => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
@@ -66,11 +68,37 @@ const AgentSignup = () => {
     }
     
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      // API call to Express backend for signup
+      const response = await fetch('http://localhost:5000/api/signup', { // Adjust URL as needed
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password, // Backend should hash this
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Signup failed. Please try again.');
+      }
+
+      // On successful signup, store token or redirect (assuming backend returns a token)
+      localStorage.setItem('token', data.token); // Adjust if your backend uses a different field name
       setIsLoading(false);
-      // Handle signup logic here
-    }, 1500);
+
+      // Redirect to login or dashboard after successful signup
+      navigate('/login'); // Redirect to login page after signup (adjust as needed)
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
   };
 
   // Password strength indicators
@@ -151,6 +179,7 @@ const AgentSignup = () => {
               placeholder="Full Name"
               value={formData.fullName}
               onChange={handleChange}
+              required
             />
           </div>
 
@@ -166,6 +195,7 @@ const AgentSignup = () => {
               placeholder="Email address"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </div>
 
@@ -182,6 +212,7 @@ const AgentSignup = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                required
               />
               <button
                 type="button"
@@ -206,6 +237,7 @@ const AgentSignup = () => {
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              required
             />
             <button
               type="button"
@@ -257,7 +289,7 @@ const AgentSignup = () => {
             <div className="flex-grow h-px bg-gradient-to-r from-transparent via-orange-900/30 to-transparent"></div>
           </div>
 
-          {/* Social Signup Buttons */}
+          {/* Social Signup Buttons (Placeholder - Add your social login logic here if needed) */}
           <div className="grid grid-cols-3 gap-4">
             {/* Google */}
             <button type="button" className="flex items-center justify-center p-3 bg-[#333333] border border-orange-900/30 rounded-lg hover:border-orange-500 hover:bg-black transition-colors">
@@ -294,9 +326,12 @@ const AgentSignup = () => {
           <div className="text-center mt-6">
             <p className="text-orange-200/70">
               Already have an account?{" "}
-              <span className="text-orange-500 cursor-pointer font-semibold hover:text-orange-400 transition-colors">
+              <Link
+                to="/login" // Link to login page
+                className="text-orange-500 cursor-pointer font-semibold hover:text-orange-400 transition-colors"
+              >
                 Sign In
-              </span>
+              </Link>
             </p>
           </div>
         </form>

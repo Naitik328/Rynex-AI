@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const AgentLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -7,26 +8,52 @@ const AgentLogin = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+    setIsLoading(true);
+
     if (!email || !password) {
       setError('Please enter both email and password');
+      setIsLoading(false);
       return;
     }
-    
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      // Updated backend endpoint for Express/MongoDB
+      const response = await fetch('http://localhost:5000/api/login', { // Adjust URL as needed
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed. Please check your credentials.');
+      }
+
+      // Store the JWT token from Express backend (assuming it returns { token: "your-jwt-token" })
+      localStorage.setItem('token', data.token); // Adjust if your backend uses a different field name
       setIsLoading(false);
-      // Handle authentication logic here
-    }, 1500);
+
+      // Redirect to dashboard or home page after login
+      navigate('/dashboard'); // Change this route to your desired post-login page
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -61,6 +88,7 @@ const AgentLogin = () => {
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
@@ -75,6 +103,7 @@ const AgentLogin = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
             <button
               type="button"
@@ -92,14 +121,18 @@ const AgentLogin = () => {
                 type="checkbox"
                 id="remember-me"
                 className="w-4 h-4 rounded border-orange-900 bg-[#1a1a1a] text-orange-500 focus:ring-orange-500/50"
+                name="remember"
               />
               <label htmlFor="remember-me" className="ml-2 text-orange-200/80 text-sm">
                 Remember me
               </label>
             </div>
-            <p className="text-orange-400 text-sm font-medium cursor-pointer hover:text-orange-300 transition-colors">
+            <Link
+              to="/forgot-password"
+              className="text-orange-400 text-sm font-medium cursor-pointer hover:text-orange-300 transition-colors"
+            >
               Forgot password?
-            </p>
+            </Link>
           </div>
 
           {/* Sign In Button */}
@@ -128,7 +161,7 @@ const AgentLogin = () => {
             <div className="flex-grow h-px bg-gradient-to-r from-transparent via-orange-900/30 to-transparent"></div>
           </div>
 
-          {/* Social Login Buttons */}
+          {/* Social Login Buttons (Placeholder - Add your social login logic here if needed) */}
           <div className="grid grid-cols-3 gap-4">
             {/* Google */}
             <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-colors">
@@ -165,9 +198,12 @@ const AgentLogin = () => {
           <div className="text-center mt-6">
             <p className="text-orange-200/70">
               Don't have an account?{" "}
-              <span className="text-orange-500 cursor-pointer font-semibold hover:text-orange-400 transition-colors">
+              <Link
+                to="/signup"
+                className="text-orange-500 cursor-pointer font-semibold hover:text-orange-400 transition-colors"
+              >
                 Create Account
-              </span>
+              </Link>
             </p>
           </div>
         </form>

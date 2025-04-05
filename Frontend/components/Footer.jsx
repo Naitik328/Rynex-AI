@@ -53,7 +53,7 @@ const Footer = () => {
                 </svg>
               </div>
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-orange-400">
-                QuantumX AI
+              RyneX AI Agent
               </span>
             </div>
             
@@ -193,7 +193,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            © {currentYear} QuantumX AI. All rights reserved.
+            © {currentYear} RyneX AI Agent. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
             <a href="#" className="hover:text-orange-400 transition-colors duration-300">Terms of Service</a>

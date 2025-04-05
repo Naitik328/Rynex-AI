@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // Keep imports in case needed for other buttons
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('features');
-  
-  // Handle scroll event to change navbar appearance
+  const [activeSection, setActiveSection] = useState('home');
+  const navigate = useNavigate(); // Keep for "Get Started" button
+
+  // Handle scroll event to change navbar appearance and update active section
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -13,25 +15,51 @@ const Navbar = () => {
       } else {
         setScrolled(false);
       }
-      
+
       // Update active section based on scroll position
-      const sections = ['features', 'how-it-works', 'success-stories', 'faqs'];
+      const sections = ['home', 'features', 'how-it-works', 'faqs'];
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
+          // Adjust the range to ensure "home" is detected at the top
+          if (section === 'home') {
+            if (rect.top <= 100 && rect.top >= -100) { // More lenient check for top
+              setActiveSection(section);
+              break;
+            }
+          } else if (rect.top <= 100 && rect.bottom >= 100) {
             setActiveSection(section);
             break;
           }
         }
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
+  const navItems = [
+    { id: 'home', label: 'Home', targetId: 'home' }, // Ensure this matches the ID in Landingpage
+    { id: 'features', label: 'Features', targetId: 'features' },
+    { id: 'how-it-works', label: 'How It Works', targetId: 'how-it-works' },
+    { id: 'faqs', label: 'FAQs', targetId: 'faqs' },
+  ];
+
+  const handleScrollToSection = (targetId) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Ensure it scrolls to the top
+      setActiveSection(targetId);
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false); // Close mobile menu after clicking
+      }
+    } else {
+      console.error(`Element with id "${targetId}" not found`);
+    }
+  };
+
   return (
     <header className={`fixed w-full z-50 px-4 py-3 transition-all duration-300 ${
       scrolled ? 'bg-black/10 backdrop-blur-md' : 'bg-transparent'
@@ -90,26 +118,20 @@ const Navbar = () => {
           </div>
           <span className="text-xl font-bold group-hover:text-orange-400 transition-colors duration-300">RyneX AI</span>
         </div>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center">
           <div className="border border-gray-600/30 rounded-full px-6 py-2 flex backdrop-blur-sm bg-transparent">
-            {[
-              { id: 'features', label: 'Features' },
-              { id: 'how-it-works', label: 'How It Works' },
-              { id: 'success-stories', label: 'Success Stories' },
-              { id: 'faqs', label: 'FAQs' }
-            ].map((item) => (
-              <a 
+            {navItems.map((item) => (
+              <a
                 key={item.id}
-                href={`#${item.id}`} 
+                href={`#${item.targetId}`} // Use href for scrolling
                 className={`relative mx-3 px-2 py-1 transition-all duration-300 hover:text-orange-400 ${
                   activeSection === item.id ? 'text-orange-400' : ''
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
-                  document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
-                  setActiveSection(item.id);
+                  handleScrollToSection(item.targetId); // Scroll to section
                 }}
               >
                 {item.label}
@@ -119,11 +141,14 @@ const Navbar = () => {
               </a>
             ))}
           </div>
-          <button className="ml-4 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium px-6 py-2 rounded-full hover:from-orange-500 hover:to-orange-400 transition-all duration-300 hover:shadow-lg hover:shadow-orange-600/30 hover:-translate-y-0.5 border border-orange-400/30 active:translate-y-0">
-            Try Now
+          <button
+            onClick={() => navigate('/login')} // Keep routing for "Get Started"
+            className="ml-4 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium px-6 py-2 rounded-full hover:from-orange-500 hover:to-orange-400 transition-all duration-300 hover:shadow-lg hover:shadow-orange-600/30 hover:-translate-y-0.5 border border-orange-400/30 active:translate-y-0"
+          >
+            Get Started
           </button>
         </nav>
-        
+
         {/* Mobile menu button */}
         <button
           className="md:hidden p-2 rounded-full bg-transparent border border-gray-600/50 hover:border-orange-400/50 transition-colors duration-300 hover:bg-black/20"
@@ -139,35 +164,32 @@ const Navbar = () => {
           </svg>
         </button>
       </div>
-      
+
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <nav className="md:hidden mt-4 backdrop-blur-md bg-black/20 border border-gray-700/50 rounded-xl p-4 animate-fadeIn transition-all duration-300 mx-4">
-          {[
-            { id: 'features', label: 'Features' },
-            { id: 'how-it-works', label: 'How It Works' },
-            { id: 'success-stories', label: 'Success Stories' },
-            { id: 'faqs', label: 'FAQs' }
-          ].map((item, index) => (
+          {navItems.map((item, index) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`#${item.targetId}`} // Use href for scrolling in mobile
               className={`block py-2 hover:text-orange-400 transition-all duration-300 hover:pl-2 ${
                 activeSection === item.id ? 'text-orange-400 border-l-2 border-orange-400 pl-2' : ''
               }`}
               style={{ animationDelay: `${index * 0.1}s` }}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
-                setActiveSection(item.id);
-                setMobileMenuOpen(false);
+                handleScrollToSection(item.targetId); // Scroll to section
+                setMobileMenuOpen(false); // Close mobile menu
               }}
             >
               {item.label}
             </a>
           ))}
-          <button className="mt-3 w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium px-4 py-2 rounded-full hover:from-orange-500 hover:to-orange-400 transition-all duration-300 border border-orange-400/30 hover:shadow-lg hover:shadow-orange-600/30 active:translate-y-0.5">
-            Try Now
+          <button
+            onClick={() => navigate('/login')} // Keep routing for "Get Started" in mobile
+            className="mt-3 w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-medium px-4 py-2 rounded-full hover:from-orange-500 hover:to-orange-400 transition-all duration-300 border border-orange-400/30 hover:shadow-lg hover:shadow-orange-600/30 active:translate-y-0.5"
+          >
+            Get Started
           </button>
         </nav>
       )}
@@ -181,7 +203,7 @@ const styles = `
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out forwards;
   }
