@@ -5,6 +5,7 @@ import MainContent from './MainContent';
 
 import IconComponents from './IconComponents'; // Ensure this file exists
 import { useAuthStore } from '../../src/store/AuthStore';
+import axios from 'axios';
 function ChatContainer() {
   const [darkMode, setDarkMode] = useState(false);
   const [prompt, setPrompt] = useState('');
@@ -45,6 +46,16 @@ function ChatContainer() {
     // This effect ensures the UI reflects the latest user data
   }, [user]);
 
+  useEffect(()=>{
+    const sendPrompt = async()=>{
+      try {
+        const resposne = await axios.post("",{prompt})
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
+
   const createNewChat = () => {
     const newChatId = Date.now().toString();
     const newChat = {
@@ -80,16 +91,16 @@ function ChatContainer() {
     setMessageCount(e.target.value.length);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!prompt.trim() || !selectedChatId) return;
-
+  
     const newMessage = {
       id: Date.now(),
       role: 'user',
       content: prompt,
     };
     const hasVideoTrigger = prompt.toLowerCase().includes('video');
-
+  
     setChatHistory((prev) => {
       return prev.map((chat) => {
         if (chat.id === selectedChatId) {
@@ -103,21 +114,32 @@ function ChatContainer() {
         return chat;
       });
     });
-
+  
     setShowVideo((prev) => prev || hasVideoTrigger);
     setPrompt('');
     setMessageCount(0);
     setIsTyping(true);
-
-    setTimeout(() => {
+  
+    try {
+      const response = await axios.post("http://your-backend-endpoint/api/messages", {
+        prompt: prompt,
+        chatId: selectedChatId,
+        userId: user?.id, // Ensure user is defined
+      }, {
+        headers: {
+          Authorization: `Bearer ${user?.token}`, // If authentication is required
+        },
+      });
+  
+      // Handle the response from the backend
       const aiResponse = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: hasVideoTrigger
+        content: response.data.response || (hasVideoTrigger
           ? 'Starting video feed. You can now see the video panel on the left side of your screen.'
-          : `I received your message: "${prompt}". How can I assist you further?`,
+          : `I received your message: "${prompt}". How can I assist you further?`),
       };
-
+  
       setChatHistory((prev) => {
         return prev.map((chat) => {
           if (chat.id === selectedChatId) {
@@ -129,8 +151,29 @@ function ChatContainer() {
           return chat;
         });
       });
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Optionally update UI to show an error message
+      const errorResponse = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: 'Sorry, there was an error processing your request. Please try again.',
+      };
+  
+      setChatHistory((prev) => {
+        return prev.map((chat) => {
+          if (chat.id === selectedChatId) {
+            return {
+              ...chat,
+              messages: [...chat.messages, errorResponse],
+            };
+          }
+          return chat;
+        });
+      });
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (e) => {

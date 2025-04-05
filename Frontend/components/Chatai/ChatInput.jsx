@@ -12,6 +12,8 @@ const ChatInput = ({
   
 }) => {
     const [inputFocused, setInputFocused] = useState(false);
+    
+    
 
   return (
     <div className="p-4 relative">
