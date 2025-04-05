@@ -26,8 +26,8 @@ const AgentLogin = () => {
     }
 
     try {
-      // Updated backend endpoint for Express/MongoDB
-      const response = await fetch('http://localhost:5000/api/login', { // Adjust URL as needed
+      // Backend endpoint for Express/MongoDB
+      const response = await fetch('http://localhost:5000/api/login', { // Adjust URL if deployed
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,12 +44,12 @@ const AgentLogin = () => {
         throw new Error(data.message || 'Login failed. Please check your credentials.');
       }
 
-      // Store the JWT token from Express backend (assuming it returns { token: "your-jwt-token" })
-      localStorage.setItem('token', data.token); // Adjust if your backend uses a different field name
+      // Store the JWT token from Express backend
+      localStorage.setItem('token', data.token); // Assumes backend returns { token: "jwt-token" }
       setIsLoading(false);
 
-      // Redirect to dashboard or home page after login
-      navigate('/dashboard'); // Change this route to your desired post-login page
+      // Redirect to chat page after successful login
+      navigate('/chat'); // Updated to redirect to /chat instead of /dashboard
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -58,7 +58,7 @@ const AgentLogin = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-orange-950 to-black text-white">
-      <div className="w-full max-w-md p-8 mx-4 bg-black/90 backdrop-blur-lg rounded-lg shadow-2xl border border-orange-900/30 hover:border-orange-500 transition-all duration-300 group">
+      <div className="w-full max-w-md p-8 mx-4 bg-black/90 backdrop-blur-lg rounded-lg shadow-2xl border border-orange-900/30 transition-all duration-300 group">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-500 to-orange-300 bg-clip-text text-transparent">RyneX Login</h1>
@@ -69,7 +69,7 @@ const AgentLogin = () => {
 
         {/* Error display */}
         {error && (
-          <div className="mb-6 p-3 bg-orange-900/20 border border-orange-800 rounded-lg text-orange-200 flex items-center gap-2">
+          <div className="mb-6 p-3 bg-orange-900/20 border border-orange-800 rounded-lg text-orange-200 flex items-center gap-2 animate-fade-in">
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
@@ -139,7 +139,7 @@ const AgentLogin = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-gradient-to-r from-orange-800 to-orange-600 text-white font-medium rounded-lg shadow-lg hover:from-orange-700 hover:to-orange-500 transition-colors"
+            className="w-full py-3 bg-gradient-to-r from-orange-800 to-orange-600 text-white font-medium rounded-lg shadow-lg hover:from-orange-700 hover:to-orange-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-center space-x-2">
               {isLoading ? (
@@ -161,10 +161,10 @@ const AgentLogin = () => {
             <div className="flex-grow h-px bg-gradient-to-r from-transparent via-orange-900/30 to-transparent"></div>
           </div>
 
-          {/* Social Login Buttons (Placeholder - Add your social login logic here if needed) */}
+          {/* Social Login Buttons (Placeholder) */}
           <div className="grid grid-cols-3 gap-4">
             {/* Google */}
-            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-colors">
+            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300">
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-500">
                 <path
                   fill="currentColor"
@@ -172,9 +172,9 @@ const AgentLogin = () => {
                 />
               </svg>
             </button>
-            
+
             {/* Apple */}
-            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-colors">
+            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300">
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-500">
                 <path
                   fill="currentColor"
@@ -182,9 +182,9 @@ const AgentLogin = () => {
                 />
               </svg>
             </button>
-            
+
             {/* GitHub */}
-            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-colors">
+            <button className="flex items-center justify-center p-3 bg-[#1a1a1a] border border-orange-900/40 rounded-lg hover:border-orange-600 hover:bg-black transition-all duration-300">
               <svg width="20" height="20" viewBox="0 0 24 24" className="text-orange-500">
                 <path
                   fill="currentColor"

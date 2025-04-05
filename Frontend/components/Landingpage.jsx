@@ -2,18 +2,19 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import GLOBE from 'vanta/dist/vanta.globe.min';
 import Navbar from './Navbar';
+import { Link } from 'react-router-dom'; // Import Link for routing
 
-// Enhanced ActionButton with animation
-const ActionButton = ({ primary, children, icon }) => {
+// Enhanced ActionButton with animation and routing capability
+const ActionButton = ({ primary, children, icon, to }) => {
   return primary ? (
-    <button className="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-3 md:px-8 md:py-3 rounded-full font-medium hover:from-orange-500 hover:to-orange-400 transition-all duration-300 shadow-lg shadow-orange-900/30 btn-glow transform hover:-translate-y-1">
+    <Link to={to} className="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-3 md:px-8 md:py-3 rounded-full font-medium hover:from-orange-500 hover:to-orange-400 transition-all duration-300 shadow-lg shadow-orange-900/30 btn-glow transform hover:-translate-y-1">
       {children}
-    </button>
+    </Link>
   ) : (
-    <button className="bg-gray-900/40 backdrop-blur-md border border-gray-700 px-6 py-3 md:px-8 md:py-3 rounded-full font-medium hover:border-orange-700 transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-1">
+    <Link to={to} className="bg-gray-900/40 backdrop-blur-md border border-gray-700 px-6 py-3 md:px-8 md:py-3 rounded-full font-medium hover:border-orange-700 transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-1">
       {icon}
       {children}
-    </button>
+    </Link>
   );
 };
 
@@ -107,7 +108,7 @@ function Landingpage() {
 
         <style>{globalStyles}</style>
 
-        <div id="home" className="flex items-center justify-center min-h-screen pt-16"> {/* Added id="home" here */}
+        <div id="home" className="flex items-center justify-center min-h-screen pt-16">
           <div className="container px-4 py-12">
             <div className="max-w-4xl mx-auto flex flex-col items-center">
               <div 
@@ -129,15 +130,15 @@ function Landingpage() {
                 className="text-base md:text-lg text-gray-300 max-w-2xl text-center mb-12 animate-fade-in"
                 style={{ animationDelay: '0.6s' }}
               >
-                RyneX  is your intelligent agent, automating tasks seamlessly to boost efficiency and productivity in real-time
+                RyneX is your intelligent agent, automating tasks seamlessly to boost efficiency and productivity in real-time
               </p>
 
               <div 
                 className="flex flex-wrap justify-center gap-4 md:gap-6 animate-fade-in"
                 style={{ animationDelay: '0.8s' }}
               >
-                <ActionButton primary>Start Free Trial</ActionButton>
-                <ActionButton icon={<PlayIcon />}>Watch Demo</ActionButton>
+                <ActionButton primary to="/chat">Start Free Trial</ActionButton> {/* Updated to route to /signup */}
+                <ActionButton icon={<PlayIcon />} to="/demo">Watch Demo</ActionButton> {/* Optional: added route for demo */}
               </div>
             </div>
           </div>

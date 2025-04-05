@@ -115,7 +115,7 @@ const Footer = () => {
 
           {/* Company */}
           <div className="lg:col-span-2">
-            <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">Links</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li>
                 <a href="#" className="hover:text-orange-400 transition-colors duration-300 flex items-center">

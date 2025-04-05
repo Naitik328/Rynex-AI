@@ -148,7 +148,7 @@ const AgentSignup = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-orange-950 to-black text-white">
-      <div className="w-full max-w-md p-8 mx-4 bg-black/90 backdrop-blur-lg rounded-lg shadow-2xl border border-orange-900/30 hover:border-orange-500 transition-all duration-300 group">
+      <div className="w-full max-w-md p-8 mx-4 bg-black/90 backdrop-blur-lg rounded-lg shadow-2xl border border-orange-900/30 hover:transition-all duration-300 group">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Create Account</h1>
