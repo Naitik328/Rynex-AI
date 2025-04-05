@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate for redirection
+import { useAuthStore } from '../src/store/AuthStore';
 
 const AgentSignup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +13,8 @@ const AgentSignup = () => {
     confirmPassword: '',
     agreeToTerms: false
   });
+  const { signUp } = useAuthStore(); // Assuming you have a custom hook for authentication
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Hook for navigation after signup
@@ -44,6 +47,9 @@ const AgentSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await signUp(formData.email, formData.password, formData.fullName,formData.confirmPassword,formData.agreeToTerms);
+    alert('Account created successfully');
+    navigate('/'); // Redirect to home page after successful signup
     setError('');
     
     // Basic validation
@@ -69,36 +75,6 @@ const AgentSignup = () => {
     
     setIsLoading(true);
 
-    try {
-      // API call to Express backend for signup
-      const response = await fetch('http://localhost:5000/api/signup', { // Adjust URL as needed
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password, // Backend should hash this
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Signup failed. Please try again.');
-      }
-
-      // On successful signup, store token or redirect (assuming backend returns a token)
-      localStorage.setItem('token', data.token); // Adjust if your backend uses a different field name
-      setIsLoading(false);
-
-      // Redirect to login or dashboard after successful signup
-      navigate('/login'); // Redirect to login page after signup (adjust as needed)
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-    }
   };
 
   // Password strength indicators

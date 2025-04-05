@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../src/store/AuthStore';
 
 const AgentLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,12 +11,17 @@ const AgentLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const {login} = useAuthStore();
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await login(email, password);
+    alert('Login successful');
+    navigate('/');
     setError('');
     setIsLoading(true);
 
@@ -25,35 +31,7 @@ const AgentLogin = () => {
       return;
     }
 
-    try {
-      // Backend endpoint for Express/MongoDB
-      const response = await fetch('http://localhost:5000/api/login', { // Adjust URL if deployed
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed. Please check your credentials.');
-      }
-
-      // Store the JWT token from Express backend
-      localStorage.setItem('token', data.token); // Assumes backend returns { token: "jwt-token" }
-      setIsLoading(false);
-
-      // Redirect to chat page after successful login
-      navigate('/chat'); // Updated to redirect to /chat instead of /dashboard
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
-    }
+  
   };
 
   return (
