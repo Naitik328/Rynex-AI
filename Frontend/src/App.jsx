@@ -45,18 +45,12 @@ const App = () => {
             <Route path="/home" element={<Homebutton />} />
             <Route
               path="/login"
-              element={
-                <PublicRoute>
-                  <AgentLogin />
-                </PublicRoute>
-              }
+              element={<AgentLogin/>}
             />
             <Route
               path="/signup"
               element={
-                <PublicRoute>
                   <AgentSignup />
-                </PublicRoute>
               }
             />
 
@@ -64,17 +58,13 @@ const App = () => {
             <Route
               path="/chat"
               element={
-                <ProtectedRoute>
                   <Chat />
-                </ProtectedRoute>
               }
             />
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute>
-                  <Chat /> {/* Replace with <Dashboard /> if you create a Dashboard component */}
-                </ProtectedRoute>
+                  <Chat /> 
               }
             />
 
